@@ -20,25 +20,28 @@ export function MenuSlider() {
           <span className="sr-only">Open Menu</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-[300px] border-r border-border/40 bg-background/95 backdrop-blur-xl sm:w-[400px]">
+      <SheetContent side="left" className="flex w-[300px] flex-col border-r border-border/40 bg-background/95 backdrop-blur-xl sm:w-[400px]">
         <SheetHeader>
           <SheetTitle className="text-xl font-bold tracking-tight text-foreground/90">
-            Menu
+            Brand
           </SheetTitle>
         </SheetHeader>
-        <div className="mt-8 flex flex-col gap-4">
-            <AuthStatusSection />
-            
-            <div className="flex h-64 flex-col items-center justify-center rounded-xl border border-dashed border-border p-4 text-muted-foreground bg-muted/20 animate-in fade-in zoom-in duration-500">
-              <span className="font-medium">Empty Menu Slider</span>
-              <span className="text-xs opacity-70 mt-2 text-center text-balance">The structure is ready for your dynamic links.</span>
-            </div>
-            
-            <BackendHealthIndicator />
+        
+        {/* Main Navigation Links Area - Grows to fill space */}
+        <div className="flex-1 py-8">
+            <nav className="flex flex-col space-y-2">
+                {/* 
+                   Dynamic Menu Items Injection Point 
+                   Example: {menuItems.map(item => <Link ... />)}
+                */}
+            </nav>
+        </div>
 
-            {/* Example Connectivity Note */}
-            <div className="rounded-lg bg-blue-50/50 p-4 text-xs text-blue-700 dark:bg-blue-900/20 dark:text-blue-300">
-              <strong>Strategy Note:</strong> Connect this component to a <code>useMenu()</code> hook to load items from any backend.
+        {/* Footer Area - User Profile & Auth */}
+        <div className="border-t border-border/50 pt-4">
+            <BackendHealthIndicator />
+            <div className="mt-4">
+                <AuthStatusSection />
             </div>
         </div>
       </SheetContent>
