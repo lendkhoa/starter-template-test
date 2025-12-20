@@ -1,0 +1,8 @@
+{
+  "health": { "status": "ok", "version": "1.0.0-simulated", "timestamp": "2024-12-20T10:00:00Z" },
+  "menu": [
+    { "id": 1, "label": "Dashboard", "path": "/dashboard" },
+    { "id": 2, "label": "Analytics", "path": "/analytics" },
+    { "id": 3, "label": "Settings", "path": "/settings" }
+  ]
+}

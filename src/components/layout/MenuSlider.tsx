@@ -2,6 +2,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import { useState } from "react";
+import { useHealthCheck } from "@/hooks/useHealthCheck";
 
 export function MenuSlider() {
   const [open, setOpen] = useState(false);
@@ -25,6 +26,9 @@ export function MenuSlider() {
               <span className="font-medium">Empty Menu Slider</span>
               <span className="text-xs opacity-70 mt-2 text-center text-balance">The structure is ready for your dynamic links.</span>
             </div>
+            
+            <BackendHealthIndicator />
+
             {/* Example Connectivity Note */}
             <div className="rounded-lg bg-blue-50/50 p-4 text-xs text-blue-700 dark:bg-blue-900/20 dark:text-blue-300">
               <strong>Strategy Note:</strong> Connect this component to a <code>useMenu()</code> hook to load items from any backend.
@@ -32,5 +36,28 @@ export function MenuSlider() {
         </div>
       </SheetContent>
     </Sheet>
+  );
+}
+
+function BackendHealthIndicator() {
+  const { data, loading, error } = useHealthCheck();
+
+  return (
+    <div className="flex items-center justify-between rounded-lg border border-border p-3 text-sm shadow-sm">
+      <span className="text-muted-foreground">Backend Status</span>
+      {loading ? (
+        <span className="flex items-center text-yellow-500 animate-pulse">
+          <span className="mr-2 h-2 w-2 rounded-full bg-yellow-500"></span> Connecting...
+        </span>
+      ) : error ? (
+        <span className="flex items-center text-red-500">
+          <span className="mr-2 h-2 w-2 rounded-full bg-red-500"></span> Offline
+        </span>
+      ) : (
+        <span className="flex items-center text-green-500">
+          <span className="mr-2 h-2 w-2 rounded-full bg-green-500"></span> Online ({data?.version})
+        </span>
+      )}
+    </div>
   );
 }

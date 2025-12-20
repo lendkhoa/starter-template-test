@@ -1,73 +1,74 @@
-# React + TypeScript + Vite
+# Premium Starter Template
+> A robust, backend-agnostic frontend template built for speed and flexibility.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 🚀 Status
+- **Architecture**: Decoupled (Headless)
+- **Frontend**: Vite + React + TypeScript + shadcn/ui
+- **Backend Ready**: Connects to any REST API (Django, Node, Go)
+- **Current Mock**: JSON Server (simulating API on port 8001)
 
-Currently, two official plugins are available:
+## 🛠 Tech Stack
+- **Core**: [Vite](https://vitejs.dev/) + [React 19](https://react.dev/)
+- **Styling**: [Tailwind CSS v3.4](https://tailwindcss.com/) + [shadcn/ui](https://ui.shadcn.com/)
+- **State/Data**: Axios + Custom Hooks
+- **Mocking**: JSON Server
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🏁 Getting Started
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### 1. Install Dependencies
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 2. Start the Development Environment
+You need two terminals running simultaneously:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+**Terminal 1: The Mock Backend** (Simulates your future Django/Node API)
+Runs on `http://localhost:8001`
+```bash
+npm run mock
 ```
+
+**Terminal 2: The Frontend** (The UI you interact with)
+Runs on `http://localhost:5173`
+```bash
+npm run dev
+```
+
+### 3. Verify Connection
+Open the **Menu Slider** (top left hamburger icon). You should see:
+- **Status: Online (1.0.0-simulated)**
+- This confirms the Frontend (5173) is successfully talking to the Backend (8001).
+
+---
+
+## 🔌 Connecting a Real Backend
+This template is designed to swap the backend without changing UI code.
+
+1.  **Stop** the `npm run mock` command.
+2.  **Start** your real backend (e.g., Django on port 8000).
+3.  **Update** your `.env` file:
+    ```env
+    # Change this to your real backend URL
+    VITE_API_BASE_URL=http://localhost:8000/api
+    ```
+4.  **Restart** the frontend (`npm run dev`).
+
+## 📁 Project Structure
+```text
+src/
+├── components/
+│   ├── ui/           # shadcn primitives (Button, Sheet, etc.)
+│   ├── layout/       # Global layout (MenuSlider, Shell)
+│   └── landing/      # Page-specific components (Hero)
+├── services/         # API Service Layer (Axios configuration)
+├── hooks/            # Data hooks (useHealthCheck)
+├── lib/              # Utilities
+└── App.tsx           # Main application entry
+```
+
+## 🧩 Adding New Features
+1.  **Define Interface**: Add types in `src/types`.
+2.  **Add Service**: Create `src/services/productService.ts`.
+3.  **Create Hook**: Create `src/hooks/useProducts.ts`.
+4.  **Build Component**: Use the hook in your UI.
