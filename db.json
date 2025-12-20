@@ -1,5 +1,7 @@
 {
   "health": { "status": "ok", "version": "1.0.0-simulated", "timestamp": "2024-12-20T10:00:00Z" },
+  "login": { "token": "mock-jwt-token-xyz-123", "user": { "id": 1, "name": "Admin User", "email": "admin@example.com" } },
+  "user_profile": { "id": 1, "name": "Admin User", "email": "admin@example.com", "role": "admin" },
   "menu": [
     { "id": 1, "label": "Dashboard", "path": "/dashboard" },
     { "id": 2, "label": "Analytics", "path": "/analytics" },
