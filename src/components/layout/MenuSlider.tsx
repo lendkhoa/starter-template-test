@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import { useState } from "react";
 import { useHealthCheck } from "@/hooks/useHealthCheck";
-import { AuthService } from "@/services/api";
 import { LogIn, LogOut, User, Settings, Sun, Moon, Laptop } from "lucide-react";
 import {
   DropdownMenu,
@@ -14,6 +13,7 @@ import {
 import { useTheme } from "@/components/ui/theme-provider";
 import { toast } from "sonner";
 import { LoginDialog } from "@/components/auth/LoginDialog";
+import { useBoundSelectors, useSystemStore } from "@/hooks/useBoundSelectors";
 
 export function MenuSlider() {
   const [open, setOpen] = useState(false);
@@ -56,17 +56,16 @@ export function MenuSlider() {
 }
 
 function AuthStatusSection() {
-  const [isLoggedIn, setIsLoggedIn] = useState(AuthService.isAuthenticated());
+  const { currentUser, isAuthenticated, logout } = useBoundSelectors();
 
   const handleLogout = () => {
-    AuthService.logout();
-    setIsLoggedIn(false);
+    logout();
     toast.info("Logged out", {
         description: "See you next time!"
     });
   };
 
-  if (!isLoggedIn) {
+  if (!isAuthenticated) {
      return (
         <div className="w-full">
             <LoginDialog 
@@ -76,7 +75,21 @@ function AuthStatusSection() {
                         <span>Sign In</span>
                     </Button>
                 } 
-                onSuccess={() => setIsLoggedIn(true)} 
+                onSuccess={() => {
+                   // We need to fetch the user after successful login if the dialog doesn't return it
+                   // But LoginDialog handles the API call. 
+                   // Ideally LoginDialog should call store.login() instead of AuthService directly
+                   // For now, we will just trigger a refresh or let the socket update?
+                   // No, let's just assume we reload or fetch.
+                   // Actually best pattern: LoginDialog calls AuthService, then calls onSuccess.
+                   // We should update the store here.
+                   // However, the cleanest way is if LoginDialog uses the hook too.
+                   // For this refactor, let's keep it simple:
+                   // The store updates itself if we call refreshUser, or we can assume LoginDialog updates it.
+                   // Let's rely on refreshUser() being called in onSuccess.
+                   const { fetchCurrentUser } = useSystemStore.getState(); 
+                   fetchCurrentUser();
+                }} 
             />
         </div>
      );
@@ -89,8 +102,8 @@ function AuthStatusSection() {
                 <User className="h-5 w-5" />
             </div>
             <div className="flex flex-col truncate">
-                <span className="truncate text-sm font-semibold leading-none text-foreground">Admin User</span>
-                <span className="truncate text-xs text-muted-foreground mt-1">admin@example.com</span>
+                <span className="truncate text-sm font-semibold leading-none text-foreground">{currentUser?.name || 'User'}</span>
+                <span className="truncate text-xs text-muted-foreground mt-1">{currentUser?.email || 'user@example.com'}</span>
             </div>
         </div>
         

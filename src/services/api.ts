@@ -105,6 +105,21 @@ export const AuthService = {
         
         localStorage.setItem('auth_token', mockResponse.token);
         return mockResponse;
+    },
+    getCurrentUser: async (): Promise<LoginResponse['user'] | null> => {
+        // In a real app, this would verify token and fetch /me
+        // For mock, we'll return a user if token exists
+        const token = localStorage.getItem('auth_token');
+        if (!token) return null;
+        
+        // Simulate network delay
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        return {
+            id: 1,
+            name: "Admin User",
+            email: "admin@example.com"
+        };
     }
 };
 

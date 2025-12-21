@@ -2,31 +2,36 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { MenuSlider } from './MenuSlider';
 import { ThemeProvider } from '@/components/ui/theme-provider';
-import { AuthService } from '@/services/api';
+
+// Mock hook
+const mockLogout = vi.fn();
+const mockLogin = vi.fn();
+
+vi.mock('@/hooks/useBoundSelectors', () => ({
+    useBoundSelectors: vi.fn(),
+    useSystemStore: {
+        getState: () => ({
+            fetchCurrentUser: vi.fn()
+        })
+    }
+}));
+
+// Import the mocked hook to manipulate its return value
+import { useBoundSelectors } from '@/hooks/useBoundSelectors';
 
 // Mock hooks
 vi.mock('@/hooks/useHealthCheck', () => ({
     useHealthCheck: () => ({ data: { version: '1.0' }, loading: false, error: null }),
 }));
 
-// Mock API
-vi.mock('@/services/api', () => ({
-    AuthService: {
-        isAuthenticated: vi.fn(),
-        login: vi.fn(),
-        loginWithGoogle: vi.fn(),
-        logout: vi.fn(),
-    },
-}));
-
-// Mock Child Components to simplify testing content
+// Mock Child Components
 vi.mock('@/components/auth/LoginDialog', () => ({
     LoginDialog: (props: { onSuccess?: () => void }) => (
         <button onClick={props.onSuccess}>Mock Login Dialog Button</button>
     )
 }));
 
-// ResizeObserver mock for Radix UI
+// ResizeObserver mock
 global.ResizeObserver = class ResizeObserver {
   observe() {}
   unobserve() {}
@@ -36,10 +41,18 @@ global.ResizeObserver = class ResizeObserver {
 describe('MenuSlider', () => {
     beforeEach(() => {
         vi.clearAllMocks();
+        // Default mock implementation
+        vi.mocked(useBoundSelectors).mockReturnValue({
+            currentUser: null,
+            isAuthenticated: false,
+            logout: mockLogout,
+            login: mockLogin,
+            isLoading: false,
+            refreshUser: vi.fn(),
+        });
     });
 
     it('renders toggle button initially', () => {
-        vi.mocked(AuthService.isAuthenticated).mockReturnValue(false);
         render(
             <ThemeProvider>
                 <MenuSlider />
@@ -49,7 +62,15 @@ describe('MenuSlider', () => {
     });
 
     it('opens sidebar and shows login button when logged out', async () => {
-        vi.mocked(AuthService.isAuthenticated).mockReturnValue(false);
+         vi.mocked(useBoundSelectors).mockReturnValue({
+            currentUser: null,
+            isAuthenticated: false,
+            logout: mockLogout,
+            login: mockLogin,
+            isLoading: false,
+            refreshUser: vi.fn(),
+        });
+
         render(
             <ThemeProvider>
                 <MenuSlider />
@@ -62,12 +83,20 @@ describe('MenuSlider', () => {
         // Check for Brand title (Sheet content)
         expect(await screen.findByText("Brand")).toBeVisible();
 
-        // Check for Mock Login Button (from LoginDialog mock)
+        // Check for Mock Login Button
         expect(screen.getByText("Mock Login Dialog Button")).toBeVisible();
     });
 
     it('shows user info and logout button when logged in', async () => {
-        vi.mocked(AuthService.isAuthenticated).mockReturnValue(true);
+        vi.mocked(useBoundSelectors).mockReturnValue({
+            currentUser: { id: 1, name: "Admin User", email: "admin@example.com" },
+            isAuthenticated: true,
+            logout: mockLogout,
+            login: mockLogin,
+            isLoading: false,
+            refreshUser: vi.fn(),
+        });
+
         render(
             <ThemeProvider>
                 <MenuSlider />
@@ -77,16 +106,24 @@ describe('MenuSlider', () => {
         // Open Menu
         fireEvent.click(screen.getByRole('button', { name: /open menu/i }));
 
-        // Check for User Info (New Design)
+        // Check for User Info
         expect(await screen.findByText("Admin User")).toBeVisible();
         expect(screen.getByText("admin@example.com")).toBeVisible();
 
-        // Check for Logout Button (Icon button with sr-only text)
+        // Check for Logout Button
         expect(screen.getByText(/log out/i)).toBeInTheDocument();
     });
 
     it('calls logout service when logout clicked', async () => {
-        vi.mocked(AuthService.isAuthenticated).mockReturnValue(true);
+        vi.mocked(useBoundSelectors).mockReturnValue({
+            currentUser: { id: 1, name: "Admin User", email: "admin@example.com" },
+            isAuthenticated: true,
+            logout: mockLogout,
+            login: mockLogin,
+            isLoading: false,
+            refreshUser: vi.fn(),
+        });
+
         render(
             <ThemeProvider>
                 <MenuSlider />
@@ -95,9 +132,11 @@ describe('MenuSlider', () => {
 
         fireEvent.click(screen.getByRole('button', { name: /open menu/i }));
         
-        const logoutBtn = await screen.findByRole('button', { name: /log out/i });
+        await screen.findByText("Admin User");
+
+        const logoutBtn = screen.getByRole('button', { name: /log out/i });
         fireEvent.click(logoutBtn);
 
-        expect(AuthService.logout).toHaveBeenCalled();
+        expect(mockLogout).toHaveBeenCalled();
     });
 });
