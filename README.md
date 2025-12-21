@@ -1,94 +1,32 @@
-# Premium Starter Template
-> A robust, backend-agnostic frontend template built for speed and flexibility.
+# Starter Template (Monorepo)
 
-<img width="1166" height="664" alt="image" src="https://github.com/user-attachments/assets/acfb821b-81d2-48c9-9974-241aab347526" />
+This repository contains both the React frontend and Django backend for the application.
 
+## 📂 Structure
 
-## 🚀 Status
-- **Architecture**: Decoupled (Headless)
-- **Frontend**: Vite + React + TypeScript + shadcn/ui
-- **Backend Ready**: Connects to any REST API (Django, Node, Go)
-- **Current Mock**: JSON Server (simulating API on port 8001)
+- **`frontend/`**:  React + Vite + TypeScript application.
+- **`backend/`**: Django REST Framework API + n8n Proxy.
+- **`docs/`**: Project documentation.
 
-## 🛠 Tech Stack
-- **Core**: [Vite](https://vitejs.dev/) + [React 19](https://react.dev/)
-- **Styling**: [Tailwind CSS v3.4](https://tailwindcss.com/) + [shadcn/ui](https://ui.shadcn.com/)
-- **State/Data**: Axios + Custom Hooks
-- **Mocking**: JSON Server
+## 🚀 Getting Started
 
-## 🏁 Getting Started
+### Prerequisites
+- Node.js (v18+)
+- Python (v3.10+)
 
-### 1. Install Dependencies
-```bash
-npm install
-```
+### Backend Setup
+1. Navigate to backend: `cd backend`
+2. Create virtual env: `python3 -m venv venv`
+3. Activate: `source venv/bin/activate`
+4. Install: `pip install -r requirements.txt`
+5. Migrate: `python manage.py migrate`
+6. Create User: `python manage.py createsuperuser`
+7. Run: `python manage.py runserver`
 
-### 2. Start the Development Environment
-You need two terminals running simultaneously:
+### Frontend Setup
+1. Navigate to frontend: `cd frontend`
+2. Install: `npm install`
+3. Run: `npm run dev`
 
-**Terminal 1: The Mock Backend** (Simulates your future Django/Node API)
-Runs on `http://localhost:8001`
-```bash
-npm run mock
-```
-
-**Terminal 2: The Frontend** (The UI you interact with)
-Runs on `http://localhost:5173`
-```bash
-npm run dev
-```
-
-### 3. Verify Connection
-Open the **Menu Slider** (top left hamburger icon). You should see:
-- **Status: Online (1.0.0-simulated)**
-- This confirms the Frontend (5173) is successfully talking to the Backend (8001).
-
----
-
-## 🔌 Connecting a Real Backend
-This template is designed to swap the backend without changing UI code.
-
-1.  **Stop** the `npm run mock` command.
-2.  **Start** your real backend (e.g., Django on port 8000).
-3.  **Update** your `.env` file:
-    ```env
-    # Change this to your real backend URL
-    VITE_API_BASE_URL=http://localhost:8000/api
-    ```
-4.  **Restart** the frontend (`npm run dev`).
-
-## 📁 Project Structure
-```text
-src/
-├── components/
-│   ├── ui/           # shadcn primitives (Button, Sheet, etc.)
-│   ├── layout/       # Global layout (MenuSlider, Shell)
-│   └── landing/      # Page-specific components (Hero)
-├── services/         # API Service Layer (Axios configuration)
-├── hooks/            # Data hooks (useHealthCheck)
-├── lib/              # Utilities
-└── App.tsx           # Main application entry
-```
-
-## 🧩 Adding New Features
-1.  **Define Interface**: Add types in `src/types`.
-2.  **Add Service**: Create `src/services/productService.ts`.
-3.  **Create Hook**: Create `src/hooks/useProducts.ts`.
-## 🧪 Running Tests
-This project uses [Vitest](https://vitest.dev/) and [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/) for unit testing.
-
-### Run All Tests
-```bash
-npm test
-```
-
-### Run Tests in Watch Mode
-```bash
-npm test
-```
-(By default, `npm test` runs in watch mode. Press `q` to quit.)
-
-### Run Tests Once (CI)
-```bash
-npm test -- run
-```
+## 🔗 Architecture
+See [docs/ARCHITECTURE_DJANGO_N8N_PROXY.md](docs/ARCHITECTURE_DJANGO_N8N_PROXY.md) for details on the backend proxy.
