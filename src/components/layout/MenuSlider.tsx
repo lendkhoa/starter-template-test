@@ -15,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useTheme } from "@/components/ui/theme-provider";
+import { toast } from "sonner";
 
 export function MenuSlider() {
   const [open, setOpen] = useState(false);
@@ -75,9 +76,15 @@ function AuthStatusSection() {
         await AuthService.login(email, password);
         setIsLoggedIn(true);
         setOpen(false); // Close dialog
+        toast.success("Welcome back!", {
+          description: "You have successfully logged in."
+        });
     } catch (err) {
         console.error("Login failed", err);
         setError("Invalid credentials or server offline");
+        toast.error("Login failed", {
+          description: "Please check your credentials and try again."
+        });
     } finally {
         setLoading(false);
     }
@@ -86,6 +93,9 @@ function AuthStatusSection() {
   const handleLogout = () => {
     AuthService.logout();
     setIsLoggedIn(false);
+    toast.info("Logged out", {
+        description: "See you next time!"
+    });
   };
 
   return (

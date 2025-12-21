@@ -1,5 +1,6 @@
 import { MenuSlider } from "@/components/layout/MenuSlider";
 import { Hero } from "@/components/landing/Hero";
+import { Toaster } from "@/components/ui/sonner"
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
       <main className="relative z-0">
         <Hero />
       </main>
+      <Toaster />
     </div>
   );
 }
