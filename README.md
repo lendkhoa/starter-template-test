@@ -1,6 +1,9 @@
 # Premium Starter Template
 > A robust, backend-agnostic frontend template built for speed and flexibility.
 
+<img width="1166" height="664" alt="image" src="https://github.com/user-attachments/assets/acfb821b-81d2-48c9-9974-241aab347526" />
+
+
 ## 🚀 Status
 - **Architecture**: Decoupled (Headless)
 - **Frontend**: Vite + React + TypeScript + shadcn/ui
