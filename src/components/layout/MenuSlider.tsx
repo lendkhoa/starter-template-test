@@ -150,7 +150,7 @@ function SettingsSubMenu() {
     <div className="w-full">
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="w-full justify-start gap-2 px-2">
+                <Button variant="ghost" className="w-full justify-start gap-2 px-2 data-[state=open]:bg-accent data-[state=open]:text-accent-foreground">
                     <Settings className="h-5 w-5" />
                     <span>Settings</span>
                 </Button>
