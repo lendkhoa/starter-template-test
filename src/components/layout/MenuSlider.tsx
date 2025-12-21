@@ -4,7 +4,7 @@ import { Menu } from "lucide-react";
 import { useState } from "react";
 import { useHealthCheck } from "@/hooks/useHealthCheck";
 import { AuthService } from "@/services/api";
-import { LogOut, User, Settings, Sun, Moon, Laptop } from "lucide-react";
+import { LogIn, LogOut, User, Settings, Sun, Moon, Laptop } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -66,32 +66,43 @@ function AuthStatusSection() {
     });
   };
 
+  if (!isLoggedIn) {
+     return (
+        <div className="w-full">
+            <LoginDialog 
+                trigger={
+                    <Button className="w-full justify-start gap-2 shadow-sm font-semibold" size="lg">
+                        <LogIn className="h-4 w-4" />
+                        <span>Sign In</span>
+                    </Button>
+                } 
+                onSuccess={() => setIsLoggedIn(true)} 
+            />
+        </div>
+     );
+  }
+
   return (
-    <div className="flex flex-col gap-2 rounded-xl border border-border bg-card p-4 shadow-sm">
-        <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-                <div className={`flex h-8 w-8 items-center justify-center rounded-full ${isLoggedIn ? 'bg-primary/20 text-primary' : 'bg-muted text-muted-foreground'}`}>
-                    <User className="h-4 w-4" />
-                </div>
-                <div className="flex flex-col">
-                    <span className="text-sm font-medium">{isLoggedIn ? 'Admin User' : 'Guest'}</span>
-                    <span className="text-xs text-muted-foreground">{isLoggedIn ? 'admin@example.com' : 'Not logged in'}</span>
-                </div>
+    <div className="group flex items-center justify-between gap-3 rounded-lg border border-transparent px-2 py-2 transition-colors hover:bg-muted/50">
+        <div className="flex items-center gap-3 overflow-hidden">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-sm ring-2 ring-background">
+                <User className="h-5 w-5" />
+            </div>
+            <div className="flex flex-col truncate">
+                <span className="truncate text-sm font-semibold leading-none text-foreground">Admin User</span>
+                <span className="truncate text-xs text-muted-foreground mt-1">admin@example.com</span>
             </div>
         </div>
-
-        {isLoggedIn ? (
-            <Button 
-                variant="outline" 
-                size="sm" 
-                className="w-full mt-2" 
-                onClick={handleLogout}
-            >
-                <LogOut className="mr-2 h-4 w-4" /> Sign Out
-            </Button>
-        ) : (
-            <LoginDialog onSuccess={() => setIsLoggedIn(true)} />
-        )}
+        
+        <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={handleLogout}
+            className="h-8 w-8 shrink-0 text-muted-foreground opacity-70 transition-all hover:bg-destructive/10 hover:text-destructive hover:opacity-100 group-hover:opacity-100"
+        >
+            <LogOut className="h-4 w-4" />
+            <span className="sr-only">Log out</span>
+        </Button>
     </div>
   );
 }
