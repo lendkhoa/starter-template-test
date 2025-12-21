@@ -11,8 +11,12 @@ vi.mock('@/services/api', () => ({
     AuthService: {
         isAuthenticated: () => false,
         login: vi.fn(),
+        loginWithGoogle: vi.fn(),
         logout: vi.fn(),
     },
+}));
+vi.mock('@/components/auth/LoginDialog', () => ({
+    LoginDialog: () => <button>Mock Login</button>
 }));
 
 // ResizeObserver mock for Radix

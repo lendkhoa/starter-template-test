@@ -1,13 +1,10 @@
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import { useState } from "react";
 import { useHealthCheck } from "@/hooks/useHealthCheck";
 import { AuthService } from "@/services/api";
-import { LogIn, LogOut, User, Settings, Sun, Moon, Laptop } from "lucide-react";
+import { LogOut, User, Settings, Sun, Moon, Laptop } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useTheme } from "@/components/ui/theme-provider";
 import { toast } from "sonner";
+import { LoginDialog } from "@/components/auth/LoginDialog";
 
 export function MenuSlider() {
   const [open, setOpen] = useState(false);
@@ -59,36 +57,6 @@ export function MenuSlider() {
 
 function AuthStatusSection() {
   const [isLoggedIn, setIsLoggedIn] = useState(AuthService.isAuthenticated());
-  const [loading, setLoading] = useState(false);
-  const [open, setOpen] = useState(false);
-  
-  // Login Form State
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-
-    try {
-        await AuthService.login(email, password);
-        setIsLoggedIn(true);
-        setOpen(false); // Close dialog
-        toast.success("Welcome back!", {
-          description: "You have successfully logged in."
-        });
-    } catch (err) {
-        console.error("Login failed", err);
-        setError("Invalid credentials or server offline");
-        toast.error("Login failed", {
-          description: "Please check your credentials and try again."
-        });
-    } finally {
-        setLoading(false);
-    }
-  };
 
   const handleLogout = () => {
     AuthService.logout();
@@ -122,57 +90,7 @@ function AuthStatusSection() {
                 <LogOut className="mr-2 h-4 w-4" /> Sign Out
             </Button>
         ) : (
-            <Dialog open={open} onOpenChange={setOpen}>
-                <DialogTrigger asChild>
-                    <Button size="sm" className="w-full mt-2">
-                         <LogIn className="mr-2 h-4 w-4" /> Sign In
-                    </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
-                    <DialogHeader>
-                        <DialogTitle>Sign In</DialogTitle>
-                        <DialogDescription>
-                            Enter your credentials to access your account.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <form onSubmit={handleLogin} className="grid gap-4 py-4">
-                        <div className="grid gap-2">
-                            <Label htmlFor="email">Email</Label>
-                            <Input 
-                                id="email" 
-                                type="email" 
-                                placeholder="name@example.com" 
-                                required
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                            />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="password">Password</Label>
-                            <Input 
-                                id="password" 
-                                type="password" 
-                                placeholder="••••••••" 
-                                required 
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                            />
-                        </div>
-                        
-                        {error && (
-                            <div className="text-xs text-red-500 font-medium">
-                                {error}
-                            </div>
-                        )}
-
-                        <div className="flex justify-end">
-                            <Button type="submit" disabled={loading}>
-                                {loading ? "Signing in..." : "Sign In"}
-                            </Button>
-                        </div>
-                    </form>
-                </DialogContent>
-            </Dialog>
+            <LoginDialog onSuccess={() => setIsLoggedIn(true)} />
         )}
     </div>
   );

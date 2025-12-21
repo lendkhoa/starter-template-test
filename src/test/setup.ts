@@ -8,7 +8,7 @@ afterEach(() => {
 
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
-  value: (query: any) => ({
+  value: (query: unknown) => ({
     matches: false,
     media: query,
     onchange: null,
@@ -35,6 +35,7 @@ class MockPointerEvent extends Event {
     this.altKey = props.altKey || false;
   }
 }
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 window.PointerEvent = MockPointerEvent as any;
 window.HTMLElement.prototype.scrollIntoView = vi.fn();
 window.HTMLElement.prototype.releasePointerCapture = vi.fn();

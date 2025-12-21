@@ -59,7 +59,7 @@ export const HealthService = {
     try {
         const response: AxiosResponse<HealthResponse> = await apiClient.get('/health');
         return response.data; 
-    } catch (error) {
+    } catch (_error) {
         console.warn("Backend not found, returning mock health data.");
         return { status: 'mock-ok', timestamp: new Date().toISOString(), version: '1.0.0-mock' };
     }
@@ -88,6 +88,23 @@ export const AuthService = {
     },
     isAuthenticated: () => {
         return !!localStorage.getItem('auth_token');
+    },
+    loginWithGoogle: async (): Promise<LoginResponse> => {
+        // Simulate network delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Mock success response
+        const mockResponse: LoginResponse = {
+            token: "mock-google-token-" + Math.random().toString(36).substring(7),
+            user: {
+                id: 999,
+                name: "Google User",
+                email: "google@example.com"
+            }
+        };
+        
+        localStorage.setItem('auth_token', mockResponse.token);
+        return mockResponse;
     }
 };
 
