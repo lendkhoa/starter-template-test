@@ -71,4 +71,21 @@ src/
 1.  **Define Interface**: Add types in `src/types`.
 2.  **Add Service**: Create `src/services/productService.ts`.
 3.  **Create Hook**: Create `src/hooks/useProducts.ts`.
-4.  **Build Component**: Use the hook in your UI.
+## 🧪 Running Tests
+This project uses [Vitest](https://vitest.dev/) and [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/) for unit testing.
+
+### Run All Tests
+```bash
+npm test
+```
+
+### Run Tests in Watch Mode
+```bash
+npm test
+```
+(By default, `npm test` runs in watch mode. Press `q` to quit.)
+
+### Run Tests Once (CI)
+```bash
+npm test -- run
+```
