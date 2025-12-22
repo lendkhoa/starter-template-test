@@ -52,8 +52,8 @@ class TriggerWorkflowView(APIView):
             enriched_payload = {
                 "input": payload,
                 "meta": {
-                    "user_id": request.user.id,
-                    "user_name": request.user.username,
+                    "user_id": request.user.id if request.user.is_authenticated else None,
+                    "user_name": request.user.username if request.user.is_authenticated else "anonymous",
                     "timestamp": "now"
                 }
             }
