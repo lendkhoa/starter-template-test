@@ -91,6 +91,6 @@ REST_FRAMEWORK = {
 # N8N Configuration
 # Define webhooks here or load from env
 N8N_WEBHOOKS = {
-    "n8n-healthcheck": os.environ.get("N8N_WEBHOOK_HEALTHCHECK", "https://n8n.jewell.cc/webhook-test/n8n-healthcheck"),
+    "n8n-healthcheck": os.environ.get("N8N_WEBHOOK_HEALTHCHECK", "https://n8n.jewell.cc/webhook/n8n-healthcheck"),
 }
 N8N_SECRET_KEY = os.environ.get("N8N_SECRET_KEY", "dev-secret")
