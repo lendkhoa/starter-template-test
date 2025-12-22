@@ -123,4 +123,20 @@ export const AuthService = {
     }
 };
 
+// 5. Workflow Service
+export interface WorkflowResponse {
+    status: string;
+    message?: string;
+}
+
+export const WorkflowService = {
+  trigger: async (slug: string, payload: Record<string, unknown> = {}): Promise<WorkflowResponse> => {
+      const response = await apiClient.post<WorkflowResponse>('/workflows/trigger/', {
+          slug,
+          payload
+      });
+      return response.data;
+  }
+};
+
 export default apiClient;

@@ -22,6 +22,10 @@ class MeView(APIView):
             "email": getattr(user, 'email', 'user@example.com')
         })
 
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+
+@method_decorator(csrf_exempt, name='dispatch')
 class TriggerWorkflowView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -58,10 +62,12 @@ class TriggerWorkflowView(APIView):
             resp = requests.post(webhook_url, json=enriched_payload, headers=headers, timeout=5)
             
             if resp.status_code >= 400:
+                print(f"Workflow error: {resp.text}")
                 return Response({"error": "Automation server error"}, status=502)
 
         except requests.RequestException as e:
              # Log error here
+            print(f"Workflow connection error: {e}")
             return Response({"error": "Failed to reach automation server"}, status=504)
 
         return Response({"status": "queued", "message": "Workflow started"}, status=202)

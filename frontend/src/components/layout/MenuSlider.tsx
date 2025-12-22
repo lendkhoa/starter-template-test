@@ -14,6 +14,8 @@ import { useTheme } from "@/components/ui/theme-provider";
 import { toast } from "sonner";
 import { LoginDialog } from "@/components/auth/LoginDialog";
 import { useBoundSelectors, useSystemStore } from "@/hooks/useBoundSelectors";
+import { WorkflowService } from '@/services/api';
+import { Play } from 'lucide-react';
 
 export function MenuSlider() {
   const [open, setOpen] = useState(false);
@@ -39,6 +41,11 @@ export function MenuSlider() {
                 {/* Fixed "Settings" Item with Submenu */}
                 <div className="px-2">
                    <SettingsSubMenu />
+                </div>
+                
+                {/* Workflow Trigger Button */}
+                <div className="px-2">
+                   <WorkflowTriggerButton />
                 </div>
             </nav>
         </div>
@@ -172,4 +179,33 @@ function SettingsSubMenu() {
         </DropdownMenu>
     </div>
   );
+}
+
+function WorkflowTriggerButton() {
+    const handleTrigger = async () => {
+        try {
+            await WorkflowService.trigger('n8n-healthcheck', {
+                someData: 'hello world'
+            });
+            toast.success("Workflow started!", {
+                description: "Check your n8n execution log."
+            });
+        } catch (error) {
+            console.error(error);
+            toast.error("Failed to start workflow", {
+                description: "Is the backend running and authenticated?"
+            });
+        }
+    };
+
+    return (
+        <Button 
+            variant="ghost" 
+            className="w-full justify-start gap-2 px-2 text-muted-foreground hover:text-foreground"
+            onClick={handleTrigger}
+        >
+            <Play className="h-5 w-5" />
+            <span>Test Workflow</span>
+        </Button>
+    );
 }
