@@ -27,7 +27,8 @@ from django.views.decorators.csrf import csrf_exempt
 
 @method_decorator(csrf_exempt, name='dispatch')
 class TriggerWorkflowView(APIView):
-    permission_classes = [IsAuthenticated]
+    # TODO: Change this to IsAuthenticated in production
+    permission_classes = [AllowAny]
 
     def post(self, request):
         workflow_slug = request.data.get("slug")
