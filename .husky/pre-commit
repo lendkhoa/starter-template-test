@@ -1,6 +1,11 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
+# Run frontend tests
 cd frontend
 npx lint-staged
 npm test -- --run
+
+# Run backend tests
+cd ../backend
+./run_tests.sh
