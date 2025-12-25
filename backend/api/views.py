@@ -1,24 +1,44 @@
+"""
+API Views for the Django backend
+Handles health checks, user info, and n8n workflow triggers
+"""
 from django.conf import settings
 from django.utils import timezone
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework import status
+
 import requests
 import logging
 
 logger = logging.getLogger(__name__)
 
+
 class HealthCheckView(APIView):
+    """
+    Simple health check endpoint
+    Returns 200 OK if the service is running
+    """
     permission_classes = [AllowAny]
 
     def get(self, request):
-        return Response({"status": "ok", "version": "1.0.0"})
+        return Response({
+            "status": "ok",
+            "version": "1.0.0"
+        })
+
 
 class MeView(APIView):
+    """
+    Returns information about the currently authenticated user
+    """
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        # In a real app, this returns the User model
         user = request.user
         return Response({
             "id": user.id,
@@ -26,22 +46,23 @@ class MeView(APIView):
             "email": getattr(user, 'email', 'user@example.com')
         })
 
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
 
 @method_decorator(csrf_exempt, name='dispatch')
 class TriggerWorkflowView(APIView):
+    """
+    Proxy endpoint for triggering n8n workflows
+    Receives requests from frontend and forwards them to n8n with enriched metadata
+    
+    Expected request body:
+    {
+        "slug": "healthcheck",  # Workflow identifier
+        "payload": { ... }       # Data to send to workflow
+    }
+    """
     permission_classes = [AllowAny]  # TODO: Change to IsAuthenticated in production
 
     def post(self, request):
-        """
-        Proxy POST requests to n8n webhooks
-        Expected request body:
-        {
-            "slug": "healthcheck",
-            "payload": { ... }
-        }
-        """
+        """Handle POST requests to trigger workflows"""
         workflow_slug = request.data.get("slug")
         payload = request.data.get("payload", {})
 
@@ -60,10 +81,10 @@ class TriggerWorkflowView(APIView):
                 status=status.HTTP_404_NOT_FOUND
             )
 
-        # Prepare payload for n8n
+        # Prepare enriched payload for n8n
         n8n_payload = self._build_n8n_payload(request, payload)
         
-        # Forward to n8n
+        # Forward to n8n and handle response
         try:
             response = self._forward_to_n8n(webhook_url, n8n_payload)
             return response
@@ -81,7 +102,16 @@ class TriggerWorkflowView(APIView):
             )
 
     def _build_n8n_payload(self, request, payload):
-        """Build enriched payload for n8n with user metadata"""
+        """
+        Build enriched payload for n8n with user metadata
+        
+        Args:
+            request: Django request object
+            payload: Original payload from frontend
+            
+        Returns:
+            dict: Enriched payload with user metadata
+        """
         return {
             "input": payload,
             "meta": {
@@ -95,12 +125,25 @@ class TriggerWorkflowView(APIView):
     def _forward_to_n8n(self, webhook_url, payload):
         """
         Forward request to n8n webhook and return proxied response
+        
+        Args:
+            webhook_url: n8n webhook URL
+            payload: Enriched payload to send
+            
+        Returns:
+            Response: Django REST framework response
+            
+        Raises:
+            requests.Timeout: If n8n doesn't respond in time
+            requests.RequestException: For other network errors
         """
         headers = {
             "Content-Type": "application/json",
-            # Only include secret if n8n is configured to expect it
-            # "X-Internal-Secret": settings.N8N_SECRET_KEY,
         }
+        
+        # Add authentication header if configured
+        if hasattr(settings, 'N8N_SECRET_KEY') and settings.N8N_SECRET_KEY:
+            headers["X-Internal-Secret"] = settings.N8N_SECRET_KEY
 
         logger.info(f"Proxying to n8n: {webhook_url}")
         logger.debug(f"Payload: {payload}")
@@ -110,13 +153,13 @@ class TriggerWorkflowView(APIView):
             webhook_url,
             json=payload,
             headers=headers,
-            timeout=10,  # Increased timeout for workflow execution
+            timeout=10,  # 10 second timeout for workflow execution
             allow_redirects=False
         )
 
         logger.info(f"n8n response: {resp.status_code}")
         
-        # Proxy n8n's response back to client
+        # Parse n8n's response
         try:
             response_data = resp.json() if resp.text else {}
         except ValueError:
