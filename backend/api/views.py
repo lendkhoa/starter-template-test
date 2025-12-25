@@ -4,6 +4,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 import requests
+import logging
+
+logger = logging.getLogger(__name__)
 
 class HealthCheckView(APIView):
     permission_classes = [AllowAny]
