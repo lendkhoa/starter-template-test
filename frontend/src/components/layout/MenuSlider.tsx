@@ -54,7 +54,7 @@ export function MenuSlider() {
         <div className="border-t border-border/50 pt-4">
             <BackendHealthIndicator />
             <div className="mt-4">
-                <AuthStatusSection />
+                <AuthStatusSection onNavigate={() => setOpen(false)} />
             </div>
         </div>
       </SheetContent>
@@ -62,7 +62,7 @@ export function MenuSlider() {
   );
 }
 
-function AuthStatusSection() {
+function AuthStatusSection({ onNavigate }: { onNavigate: () => void }) {
   const { currentUser, isAuthenticated, logout } = useBoundSelectors();
 
   const handleLogout = () => {
@@ -70,6 +70,13 @@ function AuthStatusSection() {
     toast.info("Logged out", {
         description: "See you next time!"
     });
+  };
+
+  const handleProfileClick = () => {
+    // Navigate to profile page
+    window.dispatchEvent(new CustomEvent('navigate', { detail: { path: '/profile' } }));
+    // Close the menu
+    onNavigate();
   };
 
   if (!isAuthenticated) {
@@ -83,17 +90,6 @@ function AuthStatusSection() {
                     </Button>
                 } 
                 onSuccess={() => {
-                   // We need to fetch the user after successful login if the dialog doesn't return it
-                   // But LoginDialog handles the API call. 
-                   // Ideally LoginDialog should call store.login() instead of AuthService directly
-                   // For now, we will just trigger a refresh or let the socket update?
-                   // No, let's just assume we reload or fetch.
-                   // Actually best pattern: LoginDialog calls AuthService, then calls onSuccess.
-                   // We should update the store here.
-                   // However, the cleanest way is if LoginDialog uses the hook too.
-                   // For this refactor, let's keep it simple:
-                   // The store updates itself if we call refreshUser, or we can assume LoginDialog updates it.
-                   // Let's rely on refreshUser() being called in onSuccess.
                    const { fetchCurrentUser } = useSystemStore.getState(); 
                    fetchCurrentUser();
                 }} 
@@ -104,16 +100,21 @@ function AuthStatusSection() {
 
   return (
     <div className="group flex items-center justify-between gap-3 rounded-lg border border-transparent px-2 py-2 transition-colors hover:bg-muted/50">
-        <div className="flex items-center gap-3 overflow-hidden">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-teal-500 text-white shadow-sm ring-2 ring-gray-200 dark:ring-gray-700">
+        {/* Clickable Avatar Area */}
+        <button
+          onClick={handleProfileClick}
+          className="flex flex-1 items-center gap-3 overflow-hidden text-left transition-opacity hover:opacity-80"
+        >
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-teal-500 text-white shadow-sm ring-2 ring-gray-200 transition-transform hover:scale-105 dark:ring-gray-700">
                 <User className="h-5 w-5" />
             </div>
             <div className="flex flex-col truncate">
                 <span className="truncate text-sm font-semibold leading-none text-foreground">{currentUser?.name || 'User'}</span>
                 <span className="truncate text-xs text-muted-foreground mt-1">{currentUser?.email || 'user@example.com'}</span>
             </div>
-        </div>
+        </button>
         
+        {/* Logout Button */}
         <Button 
             variant="ghost" 
             size="icon" 
