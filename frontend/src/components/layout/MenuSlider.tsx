@@ -105,7 +105,7 @@ function AuthStatusSection() {
   return (
     <div className="group flex items-center justify-between gap-3 rounded-lg border border-transparent px-2 py-2 transition-colors hover:bg-muted/50">
         <div className="flex items-center gap-3 overflow-hidden">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-sm ring-2 ring-background">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-teal-500 text-white shadow-sm ring-2 ring-gray-200 dark:ring-gray-700">
                 <User className="h-5 w-5" />
             </div>
             <div className="flex flex-col truncate">

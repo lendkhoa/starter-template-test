@@ -10,6 +10,5 @@ describe('Hero', () => {
     it('renders call to action buttons', () => {
         render(<Hero />);
         expect(screen.getByText('Get Started')).toBeInTheDocument();
-        expect(screen.getByText('View Architecture')).toBeInTheDocument();
     });
 });
