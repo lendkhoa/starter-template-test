@@ -165,4 +165,4 @@ export const HERO_STYLE_PRESETS: Record<string, HeroStylePreset> = {
 // ACTIVE STYLE CONFIGURATION
 // Change this to switch the hero style
 // ============================================
-export const ACTIVE_HERO_STYLE: keyof typeof HERO_STYLE_PRESETS = "sunset";
+export const ACTIVE_HERO_STYLE: keyof typeof HERO_STYLE_PRESETS = "vibrant";

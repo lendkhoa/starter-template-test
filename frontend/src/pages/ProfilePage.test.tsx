@@ -15,6 +15,8 @@ describe('ProfilePage', () => {
     vi.mocked(selectors.useBoundSelectors).mockReturnValue({
       isAuthenticated: false,
       currentUser: null,
+      isLoading: false,
+      login: vi.fn(),
       refreshUser: vi.fn(),
       logout: vi.fn(),
       fetchCurrentUser: vi.fn(),
@@ -27,7 +29,9 @@ describe('ProfilePage', () => {
   it('renders profile page when authenticated', () => {
     vi.mocked(selectors.useBoundSelectors).mockReturnValue({
       isAuthenticated: true,
-      currentUser: { name: 'John Doe', email: 'john@example.com' },
+      currentUser: { id: 1, name: 'John Doe', email: 'john@example.com' },
+      isLoading: false,
+      login: vi.fn(),
       refreshUser: vi.fn(),
       logout: vi.fn(),
       fetchCurrentUser: vi.fn(),
@@ -43,7 +47,9 @@ describe('ProfilePage', () => {
   it('toggles edit mode when edit button is clicked', () => {
     vi.mocked(selectors.useBoundSelectors).mockReturnValue({
       isAuthenticated: true,
-      currentUser: { name: 'John Doe', email: 'john@example.com' },
+      currentUser: { id: 1, name: 'John Doe', email: 'john@example.com' },
+      isLoading: false,
+      login: vi.fn(),
       refreshUser: vi.fn(),
       logout: vi.fn(),
       fetchCurrentUser: vi.fn(),
@@ -60,7 +66,9 @@ describe('ProfilePage', () => {
   it('renders back button', () => {
     vi.mocked(selectors.useBoundSelectors).mockReturnValue({
       isAuthenticated: true,
-      currentUser: { name: 'John Doe', email: 'john@example.com' },
+      currentUser: { id: 1, name: 'John Doe', email: 'john@example.com' },
+      isLoading: false,
+      login: vi.fn(),
       refreshUser: vi.fn(),
       logout: vi.fn(),
       fetchCurrentUser: vi.fn(),

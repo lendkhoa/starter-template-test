@@ -2,20 +2,17 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import { useState } from "react";
-import { useHealthCheck } from "@/hooks/useHealthCheck";
-import { LogIn, LogOut, User, Settings, Sun, Moon, Laptop } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { useTheme } from "@/components/ui/theme-provider";
-import { toast } from "sonner";
-import { LoginDialog } from "@/components/auth/LoginDialog";
-import { useBoundSelectors, useSystemStore } from "@/hooks/useBoundSelectors";
-import { WorkflowService } from '@/services/api';
-import { Play } from 'lucide-react';
+import { AuthStatusSection } from "./AuthStatusSection";
+import { BackendHealthIndicator } from "./BackendHealthIndicator";
+import { SettingsSubMenu } from "./SettingsSubMenu";
+import { WorkflowTriggerButton } from "./WorkflowTriggerButton";
+
+/**
+ * MenuSlider Component
+ * 
+ * Main navigation menu slider that appears from the left side.
+ * Orchestrates all child components and manages the open/close state.
+ */
 
 export function MenuSlider() {
   const [open, setOpen] = useState(false);
@@ -38,7 +35,7 @@ export function MenuSlider() {
         {/* Main Navigation Links Area - Grows to fill space */}
         <div className="flex-1 py-8">
             <nav className="flex flex-col space-y-2">
-                {/* Fixed "Settings" Item with Submenu */}
+                {/* Settings Submenu */}
                 <div className="px-2">
                    <SettingsSubMenu />
                 </div>
@@ -50,7 +47,7 @@ export function MenuSlider() {
             </nav>
         </div>
 
-        {/* Footer Area - User Profile & Auth */}
+        {/* Footer Area - Backend Health & User Profile */}
         <div className="border-t border-border/50 pt-4">
             <BackendHealthIndicator />
             <div className="mt-4">
@@ -60,153 +57,4 @@ export function MenuSlider() {
       </SheetContent>
     </Sheet>
   );
-}
-
-function AuthStatusSection({ onNavigate }: { onNavigate: () => void }) {
-  const { currentUser, isAuthenticated, logout } = useBoundSelectors();
-
-  const handleLogout = () => {
-    logout();
-    toast.info("Logged out", {
-        description: "See you next time!"
-    });
-  };
-
-  const handleProfileClick = () => {
-    // Navigate to profile page
-    window.dispatchEvent(new CustomEvent('navigate', { detail: { path: '/profile' } }));
-    // Close the menu
-    onNavigate();
-  };
-
-  if (!isAuthenticated) {
-     return (
-        <div className="w-full">
-            <LoginDialog 
-                trigger={
-                    <Button className="w-full justify-start gap-2 shadow-sm font-semibold" size="lg">
-                        <LogIn className="h-4 w-4" />
-                        <span>Sign In</span>
-                    </Button>
-                } 
-                onSuccess={() => {
-                   const { fetchCurrentUser } = useSystemStore.getState(); 
-                   fetchCurrentUser();
-                }} 
-            />
-        </div>
-     );
-  }
-
-  return (
-    <div className="group flex items-center justify-between gap-3 rounded-lg border border-transparent px-2 py-2 transition-colors hover:bg-muted/50">
-        {/* Clickable Avatar Area */}
-        <button
-          onClick={handleProfileClick}
-          className="flex flex-1 items-center gap-3 overflow-hidden text-left transition-opacity hover:opacity-80"
-        >
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-teal-500 text-white shadow-sm ring-2 ring-gray-200 transition-transform hover:scale-105 dark:ring-gray-700">
-                <User className="h-5 w-5" />
-            </div>
-            <div className="flex flex-col truncate">
-                <span className="truncate text-sm font-semibold leading-none text-foreground">{currentUser?.name || 'User'}</span>
-                <span className="truncate text-xs text-muted-foreground mt-1">{currentUser?.email || 'user@example.com'}</span>
-            </div>
-        </button>
-        
-        {/* Logout Button */}
-        <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={handleLogout}
-            className="h-8 w-8 shrink-0 text-muted-foreground opacity-70 transition-all hover:bg-destructive/10 hover:text-destructive hover:opacity-100 group-hover:opacity-100"
-        >
-            <LogOut className="h-4 w-4" />
-            <span className="sr-only">Log out</span>
-        </Button>
-    </div>
-  );
-}
-
-function BackendHealthIndicator() {
-  const { data, loading, error } = useHealthCheck();
-
-  return (
-    <div className="flex items-center justify-between rounded-lg border border-border p-3 text-sm shadow-sm">
-      <span className="text-muted-foreground">Backend Status</span>
-      {loading ? (
-        <span className="flex items-center text-yellow-500 animate-pulse">
-          <span className="mr-2 h-2 w-2 rounded-full bg-yellow-500"></span> Connecting...
-        </span>
-      ) : error ? (
-        <span className="flex items-center text-red-500">
-          <span className="mr-2 h-2 w-2 rounded-full bg-red-500"></span> Offline
-        </span>
-      ) : (
-        <span className="flex items-center text-green-500">
-          <span className="mr-2 h-2 w-2 rounded-full bg-green-500"></span> Online ({data?.version})
-        </span>
-      )}
-    </div>
-  );
-}
-
-function SettingsSubMenu() {
-  const { setTheme } = useTheme();
-
-  return (
-    <div className="w-full">
-        <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="w-full justify-start gap-2 px-2 data-[state=open]:bg-accent data-[state=open]:text-accent-foreground">
-                    <Settings className="h-5 w-5" />
-                    <span>Settings</span>
-                </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem onClick={() => setTheme("light")}>
-                    <Sun className="mr-2 h-4 w-4" />
-                    <span>Light Mode</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setTheme("dark")}>
-                    <Moon className="mr-2 h-4 w-4" />
-                    <span>Dark Mode</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setTheme("system")}>
-                    <Laptop className="mr-2 h-4 w-4" />
-                    <span>System</span>
-                </DropdownMenuItem>
-            </DropdownMenuContent>
-        </DropdownMenu>
-    </div>
-  );
-}
-
-function WorkflowTriggerButton() {
-    const handleTrigger = async () => {
-        try {
-            await WorkflowService.trigger('n8n-healthcheck', {
-                someData: 'hello world'
-            });
-            toast.success("Workflow started!", {
-                description: "Check your n8n execution log."
-            });
-        } catch (error) {
-            console.error(error);
-            toast.error("Failed to start workflow", {
-                description: "Is the backend running and authenticated?"
-            });
-        }
-    };
-
-    return (
-        <Button 
-            variant="ghost" 
-            className="w-full justify-start gap-2 px-2 text-muted-foreground hover:text-foreground"
-            onClick={handleTrigger}
-        >
-            <Play className="h-5 w-5" />
-            <span>Test Workflow</span>
-        </Button>
-    );
 }

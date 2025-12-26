@@ -33,10 +33,10 @@ export function Hero() {
         {/* Title */}
         <h1 className="animate-in fade-in slide-in-from-bottom-3 text-5xl font-extrabold tracking-tight duration-900 sm:text-7xl md:text-8xl lg:text-9xl">
           <span className={`block ${style.title.primary} transition-colors`}>
-            Build Faster with
+            Welcome to
           </span>
           <span className={`block ${style.title.gradient} transition-all`}>
-            Your Brand
+            NLG AUSTRALIA
           </span>
         </h1>
         

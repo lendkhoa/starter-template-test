@@ -5,7 +5,7 @@ import { Hero } from './Hero';
 describe('Hero', () => {
     it('renders main heading', () => {
         render(<Hero />);
-        expect(screen.getByText(/Build Faster/i)).toBeInTheDocument();
+        expect(screen.getByText(/A flexible/i)).toBeInTheDocument();
     });
     it('renders call to action buttons', () => {
         render(<Hero />);
